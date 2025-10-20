@@ -4,7 +4,7 @@ body {
   min-height: 100vh;
   overflow: hidden;
   transition: background-color 1s ease;
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: 'Patrick Hand', cursive;
 }
 
 body.drawn { background-color: #0b6b3a; } /* green after draw */
