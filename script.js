@@ -29,6 +29,12 @@ localStorage.removeItem("ss_visitorName");
 visitorName = "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
+// Save local state
+function saveState(){
+  localStorage.setItem("ss_draws", JSON.stringify(draws));
+  localStorage.setItem("ss_visitorName", visitorName);
+  localStorage.setItem("ss_musicAllowed", musicAllowed);
+}
 
 // Show screen
 function showScreen(name){
