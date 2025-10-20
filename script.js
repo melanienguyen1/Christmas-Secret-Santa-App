@@ -22,7 +22,9 @@ const resetAllBtn = document.getElementById("reset-all");
 const bgMusic = document.getElementById("bg-music");
 
 let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
-let visitorName = localStorage.getItem("ss_visitorName") || "";
+// let visitorName = localStorage.getItem("ss_visitorName") || "";
+localStorage.removeItem("ss_visitorName");
+visitorName = "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
 function saveState(){
