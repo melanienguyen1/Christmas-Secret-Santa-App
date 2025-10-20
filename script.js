@@ -8,39 +8,34 @@ const PARTICIPANTS = {
   "Ren":"Karen"
 };
 
+// DOM elements
 const welcomeScreen = document.getElementById("welcome-screen");
-const musicScreen = document.getElementById("music-screen");
 const drawScreen = document.getElementById("draw-screen");
 const visitorNameInput = document.getElementById("visitor-name");
 const continueBtn = document.getElementById("continue-btn");
-const greetNameSpan = document.getElementById("greet-name");
-const drawBtn = document.getElementById("draw-btn");
 const playerNameDisplay = document.getElementById("player-name-display");
 const animationArea = document.getElementById("animation-area");
 const resultArea = document.getElementById("result-area");
 const recipientNameEl = document.getElementById("recipient-name");
 const hideResultBtn = document.getElementById("hide-result");
 const resetAllBtn = document.getElementById("reset-all");
-const musicYesBtn = document.getElementById("music-yes");
-const musicNoBtn = document.getElementById("music-no");
 const bgMusic = document.getElementById("bg-music");
 
+// State
 let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
 let visitorName = localStorage.getItem("ss_visitorName") || "";
-let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
+// Save state
 function saveState(){
   localStorage.setItem("ss_draws", JSON.stringify(draws));
   localStorage.setItem("ss_visitorName", visitorName);
-  localStorage.setItem("ss_musicAllowed", musicAllowed);
 }
 
+// Show/hide screens
 function showScreen(name){
   welcomeScreen.classList.add("d-none");
-  musicScreen.classList.add("d-none");
   drawScreen.classList.add("d-none");
   if(name==="welcome") welcomeScreen.classList.remove("d-none");
-  if(name==="music") musicScreen.classList.remove("d-none");
   if(name==="draw") drawScreen.classList.remove("d-none");
 }
 
@@ -53,7 +48,6 @@ continueBtn.addEventListener("click", async ()=>{
   }
   visitorName = val;
   playerNameDisplay.textContent = val;
-  greetNameSpan.textContent = val;
   saveState();
 
   // Show draw screen directly
@@ -61,20 +55,6 @@ continueBtn.addEventListener("click", async ()=>{
 
   // Start music automatically
   try { await bgMusic.play(); } catch(e){ console.log("Music blocked until interaction", e); }
-});
-
-
-// Music
-musicYesBtn.addEventListener("click", async ()=>{
-  musicAllowed = true;
-  saveState();
-  showScreen("draw");
-  try { await bgMusic.play(); } catch(e){ console.log(e); }
-});
-musicNoBtn.addEventListener("click", ()=>{
-  musicAllowed = false;
-  saveState();
-  showScreen("draw");
 });
 
 // Draw
@@ -99,7 +79,7 @@ drawBtn.addEventListener("click", ()=>{
     resultArea.classList.remove("d-none");
     recipientNameEl.textContent = choice;
 
-    document.body.classList.add("drawn"); // background red->green
+    document.body.classList.add("drawn"); // red->green
 
     confetti();
   },1500);
@@ -148,11 +128,10 @@ function createSnowflakes(num=200){
     flake.style.opacity=0.5+Math.random()*0.5;
 
     const fallDuration = 10 + Math.random()*15;
-    const swayDuration = 3 + Math.random()*5;
     const delay = Math.random()*15;
 
     flake.style.top = Math.random()*-window.innerHeight + "px";
-    flake.style.animation = `fall ${fallDuration}s linear ${delay}s infinite, sway ${swayDuration}s ease-in-out ${delay}s infinite`;
+    flake.style.animation = `fallSway ${fallDuration}s linear ${delay}s infinite`;
 
     snowContainer.appendChild(flake);
   }
