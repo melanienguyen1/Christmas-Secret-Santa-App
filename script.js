@@ -82,11 +82,13 @@ recipientNameEl.textContent = draws[visitorName];
 });
 
 // --- Draw button logic ---
+const drawInstruction = document.getElementById("draw-instruction");
+
 drawBtn.addEventListener("click", () => {
   if (draws[visitorName]) return;
 
   let pool = Object.keys(PARTICIPANTS)
-    .filter(nick => nick.toLowerCase() !== visitorName.toLowerCase() && !Object.values(draws).map(v=>v.toLowerCase()).includes(nick.toLowerCase()));
+    .filter(nick => nick.toLowerCase() !== visitorName.toLowerCase() && !Object.values(draws).map(v => v.toLowerCase()).includes(nick.toLowerCase()));
 
   if (pool.length === 0) {
     alert("No eligible recipients left!");
@@ -104,16 +106,15 @@ drawBtn.addEventListener("click", () => {
     animationArea.classList.add("d-none");
     resultArea.classList.remove("d-none");
 
-    // Ensure header + name display correctly
     recipientNameEl.textContent = choice;
 
-    drawBtn.style.display = "none"; // hide draw button after drawing
+    drawInstruction.style.display = "none"; // <-- hide the "click to draw" text
+    drawBtn.style.display = "none";          // hide the draw button after drawing
     document.body.classList.add("drawn");
 
     confetti();
   }, 1500);
 });
-
 
 // --- Hide result ---
 hideResultBtn.addEventListener("click", () => {
