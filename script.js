@@ -1,14 +1,14 @@
-// 🎅 Secret Santa Fair Draw System
+// Nicknames mapping (keys are lowercase for normalization)
 const PARTICIPANTS = {
-  "Nickel": "Nicol",
-  "Ash Cash": "Ashley",
-  "Alfren": "Allison",
-  "Meth": "Melanie",
-  "Keem": "Jacquelyn",
-  "Ren": "Karen"
+  "nickel":"Nicol",
+  "ash cash":"Ashley",
+  "alfren":"Allison",
+  "meth":"Melanie",
+  "keem":"Jacquelyn",
+  "ren":"Karen"
 };
 
-// DOM Elements
+// Elements
 const welcomeScreen = document.getElementById("welcome-screen");
 const drawScreen = document.getElementById("draw-screen");
 const visitorNameInput = document.getElementById("visitor-name");
@@ -29,126 +29,123 @@ localStorage.removeItem("ss_visitorName");
 visitorName = "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
-function saveState() {
-  localStorage.setItem("ss_draws", JSON.stringify(draws));
-  localStorage.setItem("ss_visitorName", visitorName);
-  localStorage.setItem("ss_musicAllowed", musicAllowed);
-}
 
-function showScreen(name) {
+// Show screen
+function showScreen(name){
   welcomeScreen.classList.add("d-none");
   drawScreen.classList.add("d-none");
 
-  if (name === "welcome") welcomeScreen.classList.remove("d-none");
-  if (name === "draw") {
+  if(name==="welcome") welcomeScreen.classList.remove("d-none");
+  if(name==="draw"){
     drawScreen.classList.remove("d-none");
-    if (visitorName) playerNameDisplay.textContent = visitorName;
+    if(visitorName) playerNameDisplay.textContent = visitorName;
+
+    // If already drew, show recipient and hide draw button
+    if(draws[visitorName]){
+      recipientNameEl.textContent = draws[visitorName];
+      resultArea.classList.remove("d-none");
+      drawBtn.style.display = "none";
+      document.body.classList.add("drawn");
+    }
   }
 }
 
-// Normalize nickname capitalization
-function normalizeName(name) {
+// Normalize nickname input (trim + lowercase)
+function normalizeName(name){
   return name.trim().toLowerCase();
 }
 
-// Generate a perfect derangement (no self-draws)
-function generateDerangement(names) {
-  let recipients;
-  do {
-    recipients = [...names].sort(() => Math.random() - 0.5);
-  } while (recipients.some((r, i) => r === names[i]));
-  const result = {};
-  names.forEach((name, i) => result[name] = recipients[i]);
-  return result;
-}
-
 // Welcome screen
-continueBtn.addEventListener("click", async () => {
-  const val = visitorNameInput.value.trim();
-  const match = Object.keys(PARTICIPANTS).find(nick => normalizeName(nick) === normalizeName(val));
-
-  if (!match) {
+continueBtn.addEventListener("click", async ()=>{
+  const val = normalizeName(visitorNameInput.value);
+  if(!PARTICIPANTS[val]){
     alert("Enter a valid nickname.");
     return;
   }
 
-  visitorName = match;
+  visitorName = val;
   saveState();
 
   showScreen("draw");
 
-  try {
-    await bgMusic.play();
-  } catch (e) {
-    console.log("Music autoplay blocked until user interacts", e);
-  }
+  // Play music automatically
+  try { await bgMusic.play(); } catch(e){ console.log("Music blocked until interaction", e); }
 });
 
-// Draw button logic
-drawBtn.addEventListener("click", () => {
-  // Create derangement once (on first draw)
-  if (Object.keys(draws).length === 0) {
-    const names = Object.keys(PARTICIPANTS);
-    draws = generateDerangement(names);
-    saveState();
+// Draw logic
+drawBtn.addEventListener("click", ()=>{
+  if(draws[visitorName]){
+    alert("You already drew: " + draws[visitorName]);
+    drawBtn.style.display = "none";
+    recipientNameEl.textContent = draws[visitorName];
+    resultArea.classList.remove("d-none");
+    document.body.classList.add("drawn");
+    return;
   }
 
-  // Show the assigned recipient
-  const recipient = draws[visitorName];
-  if (!recipient) {
-    alert("No match found. Please reset and try again.");
+  let pool = Object.keys(PARTICIPANTS)
+    .filter(nick => nick !== visitorName && !Object.values(draws).includes(nick));
+
+  if(pool.length === 0){
+    alert("No eligible recipients left!");
     return;
   }
 
   animationArea.classList.remove("d-none");
   resultArea.classList.add("d-none");
 
-  setTimeout(() => {
+  setTimeout(()=>{
+    const choice = pool[Math.floor(Math.random()*pool.length)];
+    draws[visitorName] = choice;
+    saveState();
+
     animationArea.classList.add("d-none");
     resultArea.classList.remove("d-none");
-    recipientNameEl.textContent = recipient;
-    document.body.classList.add("drawn");
+    recipientNameEl.textContent = choice;
+
+    drawBtn.style.display = "none"; // hide draw button
+    document.body.classList.add("drawn"); // background red -> green
+
     confetti();
   }, 1500);
 });
 
-hideResultBtn.addEventListener("click", () => {
-  resultArea.classList.add("d-none");
-});
+// Hide result
+hideResultBtn.addEventListener("click", ()=>{ resultArea.classList.add("d-none"); });
 
-resetAllBtn.addEventListener("click", () => {
-  if (confirm("Reset all draws?")) {
-    draws = {};
+// Reset all draws
+resetAllBtn.addEventListener("click", ()=>{
+  if(confirm("Reset all draws?")){
+    draws={};
     saveState();
     location.reload();
   }
 });
 
-// Confetti effect
-function confetti() {
-  const duration = 2000;
-  const end = Date.now() + duration;
-  (function frame() {
-    const colors = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF"];
-    for (let i = 0; i < 20; i++) {
-      const div = document.createElement("div");
-      div.style.position = "fixed";
-      div.style.width = "8px";
-      div.style.height = "8px";
-      div.style.background = colors[Math.floor(Math.random() * colors.length)];
-      div.style.top = Math.random() * window.innerHeight + "px";
-      div.style.left = Math.random() * window.innerWidth + "px";
-      div.style.borderRadius = "50%";
-      div.style.zIndex = 9999;
+// Confetti animation
+function confetti(){
+  const duration=2000;
+  const end=Date.now()+duration;
+  (function frame(){
+    const colors=["#FF6B6B","#FFD93D","#6BCB77","#4D96FF"];
+    for(let i=0;i<20;i++){
+      const div=document.createElement("div");
+      div.style.position="fixed";
+      div.style.width="8px"; div.style.height="8px";
+      div.style.background=colors[Math.floor(Math.random()*colors.length)];
+      div.style.top=Math.random()*window.innerHeight+"px";
+      div.style.left=Math.random()*window.innerWidth+"px";
+      div.style.borderRadius="50%";
+      div.style.zIndex=9999;
       document.body.appendChild(div);
-      setTimeout(() => div.remove(), 1000);
+      setTimeout(()=>div.remove(),1000);
     }
-    if (Date.now() < end) requestAnimationFrame(frame);
+    if(Date.now()<end) requestAnimationFrame(frame);
   })();
 }
 
-// Snowflake animation
-function createSnowflakes(num = 150) {
+// Snowflakes
+function createSnowflakes(num = 200) {
   const snowContainer = document.querySelector(".snow");
   for (let i = 0; i < num; i++) {
     const flake = document.createElement("div");
@@ -165,7 +162,8 @@ function createSnowflakes(num = 150) {
     snowContainer.appendChild(flake);
   }
 }
+
 createSnowflakes();
 
-// Auto music resume
-if (musicAllowed && bgMusic.paused) bgMusic.play().catch(() => {});
+// Auto music if allowed
+if(musicAllowed && bgMusic.paused) bgMusic.play().catch(()=>{});
