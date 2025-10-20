@@ -29,6 +29,7 @@ let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
 let visitorName = localStorage.getItem("ss_visitorName") || "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
+
 // Save state
 function saveState() {
 localStorage.setItem("ss_draws", JSON.stringify(draws));
