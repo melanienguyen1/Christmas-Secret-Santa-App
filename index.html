@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🎅 Sibiling Secret Santa 2025</title>
+  <!-- Bootstrap for layout -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="snow"></div>
+
+<div class="container py-5" id="app">
+  <!-- Welcome Screen -->
+  <div id="welcome-screen" class="screen text-center">
+    <h1 class="mb-3 festive-title">🎁 Sibiling Secret Santa 2025</h1>
+    <p class="lead">Enter your NICKNAME to get started:</p>
+    <input type="text" id="visitor-name" class="form-control mb-3 festive-input" placeholder="Your nickname">
+    <button id="continue-btn" class="festive-btn">Continue</button>
+  </div>
+
+  <!-- Music Screen -->
+  <div id="music-screen" class="screen text-center d-none">
+    <h2>Hi <span id="greet-name"></span> — Do you wanna bop to some holiday music?</h2>
+    <div class="mt-3">
+      <button id="music-yes" class="festive-btn me-2">Yes 🎵</button>
+      <button id="music-no" class="festive-btn-alt">No thanks</button>
+    </div>
+  </div>
+
+  <!-- Draw Screen -->
+  <div id="draw-screen" class="screen text-center d-none">
+    <h2>Sup, <span id="player-name-display"></span>🎄</h2>
+    <p class="lead">Click to draw your Secret Santa:</p>
+    <button id="draw-btn" class="festive-btn btn-lg mb-3">Draw</button>
+
+    <div id="animation-area" class="d-none mb-3">
+      <div class="shuffler">Shuffling names...</div>
+    </div>
+
+    <div id="result-area" class="d-none">
+      <div class="result-card">
+        <h4>🎉 You got:</h4>
+        <p id="recipient-name" class="fs-4 fw-bold"></p>
+        <h5>Make their wishes come true 😉</h5>
+        <button id="hide-result" class="festive-btn-sm">Hide</button>
+      </div>
+    </div>
+
+    <button id="reset-all" class="festive-btn-alt mt-3">Reset All Draws</button>
+  </div>
+
+  <audio id="bg-music" loop>
+    <source src="/assets/Britney Spears - My Only Wish (This Year) (Official Audio).mp3" type="audio/mpeg">
+  </audio>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
