@@ -25,14 +25,12 @@ let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
 let visitorName = localStorage.getItem("ss_visitorName") || "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
-// Save local state
 function saveState(){
   localStorage.setItem("ss_draws", JSON.stringify(draws));
   localStorage.setItem("ss_visitorName", visitorName);
   localStorage.setItem("ss_musicAllowed", musicAllowed);
 }
 
-// Show screen
 function showScreen(name){
   welcomeScreen.classList.add("d-none");
   drawScreen.classList.add("d-none");
@@ -44,7 +42,12 @@ function showScreen(name){
   }
 }
 
-// Welcome
+// If user already stored name, skip to draw screen
+if(visitorName){
+  showScreen("draw");
+  playerNameDisplay.textContent = visitorName;
+}
+
 continueBtn.addEventListener("click", async ()=>{
   const val = visitorNameInput.value.trim();
   if(!PARTICIPANTS[val]){
@@ -53,14 +56,11 @@ continueBtn.addEventListener("click", async ()=>{
   }
   visitorName = val;
   saveState();
+  showScreen("draw");
 
-  showScreen("draw"); // show draw screen immediately
-
-  // Play music automatically
   try { await bgMusic.play(); } catch(e){ console.log("Music blocked until interaction", e); }
 });
 
-// Draw logic
 drawBtn.addEventListener("click", ()=>{
   if(draws[visitorName]){
     alert("You already drew: " + draws[visitorName]);
@@ -81,9 +81,7 @@ drawBtn.addEventListener("click", ()=>{
     animationArea.classList.add("d-none");
     resultArea.classList.remove("d-none");
     recipientNameEl.textContent = choice;
-
-    document.body.classList.add("drawn"); // background red -> green
-
+    document.body.classList.add("drawn");
     confetti();
   }, 1500);
 });
@@ -97,7 +95,6 @@ resetAllBtn.addEventListener("click", ()=>{
   }
 });
 
-// Confetti animation
 function confetti(){
   const duration=2000;
   const end=Date.now()+duration;
@@ -119,38 +116,24 @@ function confetti(){
   })();
 }
 
-// Snowflakes
+// SNOW
 function createSnowflakes(num = 200) {
   const snowContainer = document.querySelector(".snow");
   for (let i = 0; i < num; i++) {
     const flake = document.createElement("div");
     flake.classList.add("snowflake");
     flake.textContent = "❄";
-
-    // Random horizontal start
     flake.style.left = Math.random() * window.innerWidth + "px";
-    // Random font size
     flake.style.fontSize = 12 + Math.random() * 16 + "px";
-    // Random opacity
     flake.style.opacity = 0.5 + Math.random() * 0.5;
-    // Random start top so they aren’t all aligned
     flake.style.top = Math.random() * -window.innerHeight + "px";
-
-    // Random animation duration and delay
-    const fallDuration = 10 + Math.random() * 15; // seconds
-    const swayDuration = 3 + Math.random() * 5; // seconds
-    const delay = Math.random() * 15; // seconds
-
-    flake.style.animation = `
-      fallSway ${fallDuration}s linear ${delay}s infinite
-    `;
-
+    const fallDuration = 10 + Math.random() * 15;
+    const delay = Math.random() * 15;
+    flake.style.animation = `fallSway ${fallDuration}s linear ${delay}s infinite`;
     snowContainer.appendChild(flake);
   }
 }
 
 createSnowflakes();
 
-
-// Auto music if allowed
 if(musicAllowed && bgMusic.paused) bgMusic.play().catch(()=>{});
