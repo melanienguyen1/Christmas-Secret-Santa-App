@@ -26,9 +26,7 @@ const bgMusic = document.getElementById("bg-music");
 
 // Local storage state
 let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
-// let visitorName = localStorage.getItem("ss_visitorName") || "";
-localStorage.removeItem("ss_visitorName");
-visitorName = "";
+let visitorName = localStorage.getItem("ss_visitorName") || "";
 let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
 // Save state
