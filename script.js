@@ -1,4 +1,4 @@
-// Nicknames mapping: nickname -> real name
+// Nicknames mapping
 const PARTICIPANTS = {
   "Nickel":"Nicol",
   "Ash Cash":"Ashley",
@@ -17,7 +17,6 @@ const greetNameSpan = document.getElementById("greet-name");
 const drawBtn = document.getElementById("draw-btn");
 const playerNameDisplay = document.getElementById("player-name-display");
 const animationArea = document.getElementById("animation-area");
-const shuffler = document.getElementById("shuffler");
 const resultArea = document.getElementById("result-area");
 const recipientNameEl = document.getElementById("recipient-name");
 const hideResultBtn = document.getElementById("hide-result");
@@ -60,18 +59,17 @@ continueBtn.addEventListener("click", ()=>{
 });
 
 // Music
-musicYesBtn.addEventListener("click", ()=>{
+musicYesBtn.addEventListener("click", async ()=>{
   musicAllowed = true;
-  bgMusic.play().catch(()=>{});
   saveState();
   showScreen("draw");
+  try { await bgMusic.play(); } catch(e){ console.log(e); }
 });
 musicNoBtn.addEventListener("click", ()=>{
   musicAllowed = false;
   saveState();
   showScreen("draw");
 });
-if(visitorName) playerNameDisplay.textContent = visitorName;
 
 // Draw
 drawBtn.addEventListener("click", ()=>{
@@ -95,7 +93,7 @@ drawBtn.addEventListener("click", ()=>{
     resultArea.classList.remove("d-none");
     recipientNameEl.textContent = choice;
 
-    document.body.classList.add("drawn"); // red->green
+    document.body.classList.add("drawn"); // background red->green
 
     confetti();
   },1500);
@@ -132,8 +130,8 @@ function confetti(){
   })();
 }
 
-// Snowflakes
-function createSnowflakes(num=800){
+// Snowflakes (continuous)
+function createSnowflakes(num=200){
   const snowContainer=document.querySelector(".snow");
   for(let i=0;i<num;i++){
     const flake=document.createElement("div");
@@ -143,16 +141,14 @@ function createSnowflakes(num=800){
     flake.style.fontSize=(12+Math.random()*16)+"px";
     flake.style.opacity=0.5+Math.random()*0.5;
 
-    // Duration proportional to font size (smaller fall slower)
     const fallDuration = 10 + Math.random()*15;
     const swayDuration = 3 + Math.random()*5;
-    flake.style.animation=`fall ${fallDuration}s linear infinite, sway ${swayDuration}s ease-in-out infinite`;
-    flake.style.top = Math.random()*-window.innerHeight + "px"; // start above screen
+    const delay = Math.random()*15;
+
+    flake.style.top = Math.random()*-window.innerHeight + "px";
+    flake.style.animation = `fall ${fallDuration}s linear ${delay}s infinite, sway ${swayDuration}s ease-in-out ${delay}s infinite`;
 
     snowContainer.appendChild(flake);
   }
 }
 createSnowflakes();
-
-// Auto music
-if(musicAllowed && bgMusic.paused) bgMusic.play().catch(()=>{});
