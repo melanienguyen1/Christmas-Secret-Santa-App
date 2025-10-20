@@ -56,19 +56,13 @@ body.drawn { background-color: #0b6b3a; } /* green after draw */
   opacity: 0.8;
   user-select: none;
   pointer-events: none;
-  animation-name: fall, sway;
-  animation-timing-function: linear, ease-in-out;
-  animation-iteration-count: infinite, infinite;
 }
 
-@keyframes fall {
-  0% { top: -50px; }
-  100% { top: 110vh; }
-}
-@keyframes sway {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(20px); }
-  100% { transform: translateX(0); }
+/* Continuous falling + sway animation */
+@keyframes fallSway {
+  0% { transform: translateY(-50px) translateX(0); }
+  50% { transform: translateY(50vh) translateX(20px); }
+  100% { transform: translateY(110vh) translateX(0); }
 }
 
 /* Result Card */
