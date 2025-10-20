@@ -84,3 +84,9 @@ body.drawn { background-color: #0b6b3a; } /* green after draw */
   font-weight: bold;
 }
 .screen.d-none { display:none; }
+
+#christmas-countdown {
+  text-shadow: 1px 1px 2px #000;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
