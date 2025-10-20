@@ -205,3 +205,27 @@ function updateCountdown() {
 // Update every second
 setInterval(updateCountdown, 1000);
 updateCountdown(); // initial call
+
+// --- On page load, restore visitor if they already entered a name ---
+window.addEventListener("DOMContentLoaded", () => {
+  if (visitorName) {
+    showScreen("draw");
+
+    // Show previous draw if it exists
+    if (draws[visitorName]) {
+      document.body.classList.add("drawn");
+      drawBtn.style.display = "none";
+      drawInstruction.style.display = "none";
+      animationArea.classList.add("d-none");
+      resultArea.classList.remove("d-none");
+      recipientNameEl.textContent = draws[visitorName];
+    }
+
+    playerNameDisplay.textContent = visitorName;
+
+    // Play music if allowed
+    if (musicAllowed && bgMusic.paused) bgMusic.play().catch(() => {});
+  } else {
+    showScreen("welcome");
+  }
+});
