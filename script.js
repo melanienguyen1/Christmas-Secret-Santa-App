@@ -136,4 +136,7 @@ function createSnowflakes(num=200){
     snowContainer.appendChild(flake);
   }
 }
-createSnowflakes();
+document.addEventListener("DOMContentLoaded", () => {
+    createSnowflakes();
+});
+
