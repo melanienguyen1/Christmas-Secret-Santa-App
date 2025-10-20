@@ -83,40 +83,37 @@ recipientNameEl.textContent = draws[visitorName];
 
 // --- Draw button logic ---
 drawBtn.addEventListener("click", () => {
-if (draws[visitorName]) {
-alert("You already drew: " + draws[visitorName]);
-return;
-}
+  if (draws[visitorName]) return;
 
-// Random eligible pool
-const pool = Object.keys(PARTICIPANTS).filter(
-nick => nick !== visitorName && !Object.values(draws).includes(nick)
-);
+  let pool = Object.keys(PARTICIPANTS)
+    .filter(nick => nick.toLowerCase() !== visitorName.toLowerCase() && !Object.values(draws).map(v=>v.toLowerCase()).includes(nick.toLowerCase()));
 
-if (pool.length === 0) {
-alert("No eligible recipients left!");
-return;
-}
+  if (pool.length === 0) {
+    alert("No eligible recipients left!");
+    return;
+  }
 
-// Start animation
-animationArea.classList.remove("d-none");
-resultArea.classList.add("d-none");
+  animationArea.classList.remove("d-none");
+  resultArea.classList.add("d-none");
 
-setTimeout(() => {
-const choice = pool[Math.floor(Math.random() * pool.length)];
-draws[visitorName] = choice;
-saveState();
+  setTimeout(() => {
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    draws[visitorName] = choice;
+    saveState();
 
-animationArea.classList.add("d-none");
-resultArea.classList.remove("d-none");
-recipientNameEl.textContent = PARTICIPANTS[choice] || choice;
+    animationArea.classList.add("d-none");
+    resultArea.classList.remove("d-none");
 
-document.body.classList.add("drawn");
-drawBtn.classList.add("d-none"); // hide draw button after drawing
+    // Ensure header + name display correctly
+    recipientNameEl.textContent = choice;
 
-confetti();
-}, 1500);
+    drawBtn.style.display = "none"; // hide draw button after drawing
+    document.body.classList.add("drawn");
+
+    confetti();
+  }, 1500);
 });
+
 
 // --- Hide result ---
 hideResultBtn.addEventListener("click", () => {
