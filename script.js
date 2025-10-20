@@ -3,16 +3,16 @@ const PARTICIPANTS = {
   "Nickel":"Nicol",
   "Ash Cash":"Ashley",
   "Alfren":"Allison",
-  "Meth":"Allison",
+  "Meth":"Melanie",
   "Keem":"Jacquelyn",
   "Ren":"Karen"
 };
 
-// DOM elements
 const welcomeScreen = document.getElementById("welcome-screen");
 const drawScreen = document.getElementById("draw-screen");
 const visitorNameInput = document.getElementById("visitor-name");
 const continueBtn = document.getElementById("continue-btn");
+const drawBtn = document.getElementById("draw-btn");
 const playerNameDisplay = document.getElementById("player-name-display");
 const animationArea = document.getElementById("animation-area");
 const resultArea = document.getElementById("result-area");
@@ -21,22 +21,27 @@ const hideResultBtn = document.getElementById("hide-result");
 const resetAllBtn = document.getElementById("reset-all");
 const bgMusic = document.getElementById("bg-music");
 
-// State
 let draws = JSON.parse(localStorage.getItem("ss_draws")) || {};
 let visitorName = localStorage.getItem("ss_visitorName") || "";
+let musicAllowed = localStorage.getItem("ss_musicAllowed") === "true";
 
-// Save state
+// Save local state
 function saveState(){
   localStorage.setItem("ss_draws", JSON.stringify(draws));
   localStorage.setItem("ss_visitorName", visitorName);
+  localStorage.setItem("ss_musicAllowed", musicAllowed);
 }
 
-// Show/hide screens
+// Show screen
 function showScreen(name){
   welcomeScreen.classList.add("d-none");
   drawScreen.classList.add("d-none");
+
   if(name==="welcome") welcomeScreen.classList.remove("d-none");
-  if(name==="draw") drawScreen.classList.remove("d-none");
+  if(name==="draw"){
+    drawScreen.classList.remove("d-none");
+    if(visitorName) playerNameDisplay.textContent = visitorName;
+  }
 }
 
 // Welcome
@@ -47,17 +52,15 @@ continueBtn.addEventListener("click", async ()=>{
     return;
   }
   visitorName = val;
-  playerNameDisplay.textContent = val;
   saveState();
 
-  // Show draw screen directly
-  showScreen("draw");
+  showScreen("draw"); // show draw screen immediately
 
-  // Start music automatically
+  // Play music automatically
   try { await bgMusic.play(); } catch(e){ console.log("Music blocked until interaction", e); }
 });
 
-// Draw
+// Draw logic
 drawBtn.addEventListener("click", ()=>{
   if(draws[visitorName]){
     alert("You already drew: " + draws[visitorName]);
@@ -79,10 +82,10 @@ drawBtn.addEventListener("click", ()=>{
     resultArea.classList.remove("d-none");
     recipientNameEl.textContent = choice;
 
-    document.body.classList.add("drawn"); // red->green
+    document.body.classList.add("drawn"); // background red -> green
 
     confetti();
-  },1500);
+  }, 1500);
 });
 
 hideResultBtn.addEventListener("click", ()=>{ resultArea.classList.add("d-none"); });
@@ -94,7 +97,7 @@ resetAllBtn.addEventListener("click", ()=>{
   }
 });
 
-// Confetti
+// Confetti animation
 function confetti(){
   const duration=2000;
   const end=Date.now()+duration;
@@ -116,35 +119,38 @@ function confetti(){
   })();
 }
 
-// Snowflakes (continuous, proper animation)
-function createSnowflakes(num=200){
+// Snowflakes
+function createSnowflakes(num = 200) {
   const snowContainer = document.querySelector(".snow");
-  for(let i=0; i<num; i++){
+  for (let i = 0; i < num; i++) {
     const flake = document.createElement("div");
     flake.classList.add("snowflake");
     flake.textContent = "❄";
 
-    // Random position & size
+    // Random horizontal start
     flake.style.left = Math.random() * window.innerWidth + "px";
-    flake.style.fontSize = (12 + Math.random() * 16) + "px";
+    // Random font size
+    flake.style.fontSize = 12 + Math.random() * 16 + "px";
+    // Random opacity
     flake.style.opacity = 0.5 + Math.random() * 0.5;
+    // Random start top so they aren’t all aligned
+    flake.style.top = Math.random() * -window.innerHeight + "px";
 
-    // Random animation timing
-    const fallDuration = 10 + Math.random() * 15;
-    const swayDuration = 3 + Math.random() * 5;
-    const delay = Math.random() * 10;
+    // Random animation duration and delay
+    const fallDuration = 10 + Math.random() * 15; // seconds
+    const swayDuration = 3 + Math.random() * 5; // seconds
+    const delay = Math.random() * 15; // seconds
 
     flake.style.animation = `
-      fall ${fallDuration}s linear ${delay}s infinite,
-      sway ${swayDuration}s ease-in-out ${delay}s infinite
+      fallSway ${fallDuration}s linear ${delay}s infinite
     `;
 
     snowContainer.appendChild(flake);
   }
 }
 
-// Wait until DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-    createSnowflakes();
-});
+createSnowflakes();
 
+
+// Auto music if allowed
+if(musicAllowed && bgMusic.paused) bgMusic.play().catch(()=>{});
