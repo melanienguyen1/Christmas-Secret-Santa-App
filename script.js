@@ -45,18 +45,24 @@ function showScreen(name){
 }
 
 // Welcome
-continueBtn.addEventListener("click", ()=>{
+continueBtn.addEventListener("click", async ()=>{
   const val = visitorNameInput.value.trim();
   if(!PARTICIPANTS[val]){
     alert("Enter a valid nickname.");
     return;
   }
   visitorName = val;
-  greetNameSpan.textContent = val;
   playerNameDisplay.textContent = val;
+  greetNameSpan.textContent = val;
   saveState();
-  showScreen("music");
+
+  // Show draw screen directly
+  showScreen("draw");
+
+  // Start music automatically
+  try { await bgMusic.play(); } catch(e){ console.log("Music blocked until interaction", e); }
 });
+
 
 // Music
 musicYesBtn.addEventListener("click", async ()=>{
