@@ -116,26 +116,34 @@ function confetti(){
   })();
 }
 
-// Snowflakes (continuous)
+// Snowflakes (continuous, proper animation)
 function createSnowflakes(num=200){
-  const snowContainer=document.querySelector(".snow");
-  for(let i=0;i<num;i++){
-    const flake=document.createElement("div");
+  const snowContainer = document.querySelector(".snow");
+  for(let i=0; i<num; i++){
+    const flake = document.createElement("div");
     flake.classList.add("snowflake");
-    flake.textContent="❄";
-    flake.style.left=Math.random()*window.innerWidth+"px";
-    flake.style.fontSize=(12+Math.random()*16)+"px";
-    flake.style.opacity=0.5+Math.random()*0.5;
+    flake.textContent = "❄";
 
-    const fallDuration = 10 + Math.random()*15;
-    const delay = Math.random()*15;
+    // Random position & size
+    flake.style.left = Math.random() * window.innerWidth + "px";
+    flake.style.fontSize = (12 + Math.random() * 16) + "px";
+    flake.style.opacity = 0.5 + Math.random() * 0.5;
 
-    flake.style.top = Math.random()*-window.innerHeight + "px";
-    flake.style.animation = `fallSway ${fallDuration}s linear ${delay}s infinite`;
+    // Random animation timing
+    const fallDuration = 10 + Math.random() * 15;
+    const swayDuration = 3 + Math.random() * 5;
+    const delay = Math.random() * 10;
+
+    flake.style.animation = `
+      fall ${fallDuration}s linear ${delay}s infinite,
+      sway ${swayDuration}s ease-in-out ${delay}s infinite
+    `;
 
     snowContainer.appendChild(flake);
   }
 }
+
+// Wait until DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
     createSnowflakes();
 });
